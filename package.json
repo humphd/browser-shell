@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "parcel build src/index.html --detailed-report",
+    "build-travis": "parcel build src/index.html --public-url /browser-shell/",
     "eslint": "eslint src",
     "eslint-fix": "eslint src --fix",
     "test": "npm run eslint"
