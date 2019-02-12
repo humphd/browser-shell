@@ -8,7 +8,7 @@ os:
   - linux
 
 after_success:
-  - npm run build
+  - npm run build-travis
   - ./tools/download-binaries.sh v1.0.0
 
 deploy:
