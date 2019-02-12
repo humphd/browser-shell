@@ -6,10 +6,10 @@
 mkdir -p dist/bin
 
 echo "Downloading seabios.bin"
-curl https://github.com/humphd/browser-vm/releases/download/$1/seabios.bin > dist/bin/seabios.bin
+curl -L https://github.com/humphd/browser-vm/releases/download/$1/seabios.bin > dist/bin/seabios.bin
 
 echo "Downloading vgabios.bin"
-curl https://github.com/humphd/browser-vm/releases/download/$1/vgabios.bin > dist/bin/vgabios.bin
+curl -L https://github.com/humphd/browser-vm/releases/download/$1/vgabios.bin > dist/bin/vgabios.bin
 
 echo "Downloading v86-linux.iso"
-curl https://github.com/humphd/browser-vm/releases/download/$1/v86-linux.iso > dist/bin/v86-linux.iso
+curl -L https://github.com/humphd/browser-vm/releases/download/$1/v86-linux.iso > dist/bin/v86-linux.iso
