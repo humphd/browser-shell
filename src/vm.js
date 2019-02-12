@@ -2,18 +2,24 @@
 
 const { fs, Path, Buffer } = require('filer');
 const { V86Starter } = require('v86');
-const { vmStateCache, stateUrl, defaultEmulatorOptions } = require('./config');
+const { defaultEmulatorOptions } = require('./config');
+const cache = require('./cache');
 
-// Expose fs on window
+// Expose fs on window for people to play on the console if they want
 window.fs = fs;
+window.path = Path;
+window.Buffer = Buffer;
+console.info('fs, path, and Buffer are all available on window for debugging, e.g., fs.stat(\'/\', console.log)');
+console.info('See https://github.com/filerjs/filer for docs.');
+console.info('use ?debug on the URL if you need Plan9/Filer debug info from x86');
 
 // What our shell prompt looks like, so we can wait on it.
 const prompt = '/ # ';
 
-const getVMStateUrl = () => new URL(stateUrl, window.location);
-
 const getVMStartOptions = () => {
   const options = Object.create(defaultEmulatorOptions);
+
+  // Pass the filesystem into the vm
   options.filesystem = {
     fs,
     sh: new fs.Shell(),
@@ -24,46 +30,52 @@ const getVMStartOptions = () => {
   return options;
 };
 
-class VM {
-  constructor(term) {
-    this.emulator = null;
-    this.term = term;
+let emulator = null;
 
-    this.boot = async () => {
-      if (this.emulator) {
-        return;
-      }
-
-      const hasCachedVM = await checkState();
-      if (hasCachedVM) {
-        this.emulator = warmBoot(this.term);
-      } else {
-        this.emulator = await coldBoot(this.term);
-      }
-    };
-
-    // Pause the running VM
-    this.suspend = () => {
-      if (!(this.emulator && this.emulator.is_running())) {
-        return;
-      }
-      this.emulator.stop();
-    };
-
-    // Restart the paused VM
-    this.resume = () => {
-      if (!(this.emulator && !this.emulator.is_running())) {
-        return;
-      }
-      this.emulator.run();
-    };
+module.exports.boot = async term => {
+  if (emulator) {
+    return;
   }
-}
+
+  const hasCachedVM = await cache.hasState();
+  if (hasCachedVM) {
+    try {
+      await warmBoot(term);
+    } catch(err) {
+      console.log('Warm boot failed:', err.message);
+      await coldBoot(term);
+    }
+  } else {
+    await coldBoot(term);
+  }
+
+  // Reduce CPU/battery use when not in focus
+  // TODO: we might want to add UI to disable this later
+  term.on('focus', resume);
+  term.on('blur', suspend);
+};
+
+// Pause the running VM
+const suspend = module.exports.suspend = () => {
+  if (!(emulator && emulator.is_running())) {
+    return;
+  }
+  emulator.stop();
+};
+
+// Restart the paused VM
+const resume = module.exports.resume = () => {
+  if (!(emulator && !emulator.is_running())) {
+    return;
+  }
+  emulator.run();
+};
 
 // Wire up event handlers, print shell prompt (which we've eaten), and focus term.
 const startTerminal = (emulator, term) => {
   term.reset();
-  term.writeln('Linux 4.15.7. Shared browser files are located in /mnt');
+  term.writeln('Linux 4.15.7. Shared browser filesystem mounted in /mnt.');
+  term.writeln('fs, path, and Buffer are available on console for debugging.');
   term.write(prompt);
   term.focus();
 
@@ -75,14 +87,6 @@ const startTerminal = (emulator, term) => {
 
 // Power up VM, saving state when boot completes.
 const coldBoot = async term => {
-/**
-  term.write('Booting Linux');
-
-  // Write .... to terminal to show we're doing something.
-  const timer = setInterval(() => {
-    term.write('.');
-  }, 500);
-**/
   const options = getVMStartOptions();
   const emulator = new V86Starter(options);
 
@@ -91,16 +95,19 @@ const coldBoot = async term => {
 };
 
 // Restore VM from saved state
-const warmBoot = term => {
+const warmBoot = async term => {
   // Add saved state URL for vm
   const options = getVMStartOptions();
-  options.initial_state = {
-    url: stateUrl
-  };
-  const emulator = new V86Starter(options);
-  startTerminal(emulator, term);
 
-  return emulator;
+  return cache.getState()
+    .then(response => response.arrayBuffer())
+    .then(arrayBuffer =>
+      URL.createObjectURL(new Blob([arrayBuffer], { type: 'application/octet-stream' } )))
+    .then(url => {
+      options.initial_state = { url };
+      const emulator = new V86Starter(options);
+      startTerminal(emulator, term);
+    });
 };
 
 // Wait until we get our shell prompt (other characters are noise on the serial port at startup)
@@ -150,42 +157,6 @@ const storeInitialStateOnBoot = async (emulator, term) => {
   // Wait for the prompt to come up, then start term and save the VM state
   await waitForPrompt(emulator, term);
   startTerminal(emulator, term);
-//  emulator.save_state(saveVMState);
+  emulator.save_state(cache.saveState);
+  console.log('Saved VM cpu/memory state to Cache Storage');
 };
-
-// See if we have a cached VM machine state to restart from a previous boot.
-const checkState = () =>
-  caches
-    .open(vmStateCache)
-    .then(cache =>
-      cache.match(getVMStateUrl()).then(response => !!response)
-    );
-
-// Save the VM's booted state to improve startup next time.
-const saveVMState = (err, state) => {
-  const blob = new Blob([new Uint8Array(state)], {
-    type: 'application/octet-stream',
-  });
-  const response = new Response(blob, {
-    status: 200,
-    statusText: 'OK, Linux VM machine state cached (safe to delete).',
-  });
-
-  const headers = new Headers();
-  headers.append('Content-Type', 'application/octet-stream');
-  // TODO: not sure why content-length is always 0 in Chrome?
-  headers.append('Content-Length', blob.size);
-
-  const url = getVMStateUrl();
-  const request = new Request(url, {
-    method: 'GET',
-    headers,
-  });
-
-  caches
-    .open(vmStateCache)
-    .then(cache => cache.put(request, response))
-    .catch(err => console.error(err));
-};
-
-module.exports = VM;

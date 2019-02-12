@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "build": "parcel build src/index.html --detailed-report",
-    "eslint": "eslint .",
-    "eslint-fix": "eslint . --fix"
+    "eslint": "eslint src",
+    "eslint-fix": "eslint src --fix"
   },
   "repository": {
     "type": "git",
