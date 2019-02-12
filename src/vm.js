@@ -11,7 +11,7 @@ window.path = Path;
 window.Buffer = Buffer;
 console.info('fs, path, and Buffer are all available on window for debugging, e.g., fs.stat(\'/\', console.log)');
 console.info('See https://github.com/filerjs/filer for docs.');
-console.info('use ?debug on the URL if you need Plan9/Filer debug info from x86');
+console.info('use ?debug on the URL if you need Plan9/Filer debug info from v86');
 
 // What our shell prompt looks like, so we can wait on it.
 const prompt = '/ # ';
