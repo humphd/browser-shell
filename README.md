@@ -7,9 +7,24 @@ shared over [Plan 9 resource sharing](https://www.kernel.org/doc/Documentation/f
 
 The Filer filesystem in the browser is mounted in the Linux VM at `/mnt`.
 
-## Example
+## Demo
 
-Until I get a demo uploaded for people to try themselves, here's a sample of what
-it does:
+You can play with the [online demo](https://humphd.github.io/browser-shell/), or
+watch the following screencast.
+
+The first time you boot, it needs to download the ISO, and do a cold boot. After
+that it will cache the state of the VM in Cache Storage, and reboots will be
+nearly instant (like resuming your laptop form sleep).
+
+The shared filesystem's root dir (`/`) is mounted in `/mnt` in the Linux VM.
+You can open the console and get access to `fs`, `path`, and `Buffer` if you want
+to try doing things from JS with the filesystem; just remember that your files
+are rooted in `/` vs. `/mnt` in JS.
+
+In the screencast below, I demonstrate creating some files and directories from
+Linux, then accessing them via JS and the console, and vice versa.  Pretty much
+anything that Linux can do with a filesystem should work, including working with
+files, directories, symlinks, and all the usual I/O commands.  File a bug if you find
+something that doesn't work.
 
 ![](screenshots/browser-shell.gif)
