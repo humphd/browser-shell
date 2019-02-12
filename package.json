@@ -6,7 +6,8 @@
   "scripts": {
     "build": "parcel build src/index.html --detailed-report",
     "eslint": "eslint src",
-    "eslint-fix": "eslint src --fix"
+    "eslint-fix": "eslint src --fix",
+    "test": "npm run eslint"
   },
   "repository": {
     "type": "git",
