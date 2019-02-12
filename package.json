@@ -1,0 +1,32 @@
+{
+  "name": "browser-shell",
+  "version": "1.0.0",
+  "description": "A Linux command-line shell in the browser",
+  "main": "index.js",
+  "scripts": {
+    "build": "parcel build src/index.html --detailed-report",
+    "eslint": "eslint .",
+    "eslint-fix": "eslint . --fix"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/humphd/browser-shell.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/humphd/browser-shell/issues"
+  },
+  "homepage": "https://github.com/humphd/browser-shell#readme",
+  "dependencies": {
+    "filer": "^1.1.2",
+    "v86": "github:humphd/v86#filer-9p-lastknowngood",
+    "xterm": "^3.11.0"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-preset-env": "^1.7.0",
+    "eslint": "^5.13.0",
+    "parcel": "^1.11.0"
+  }
+}

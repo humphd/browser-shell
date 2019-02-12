@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Terminal</title>
+    <link rel="stylesheet" href="../node_modules/xterm/dist/xterm.css">
+</head>
+<body>
+    <!-- xterm -->
+    <div id="terminal"></div>
+
+    <!-- XXX: if you want the v86 console for some reason -->
+    <div id="screen_container" hidden>
+        <div style="white-space: pre; font: 14px monospace; line-height: 14px"></div>
+        <canvas></canvas>
+    </div>
+    <!-- XXX: button assumed in libv86.js crashes without this -->
+    <button id="start_emulation" hidden>Start Emulation</button>
+
+    <script src="./index.js"></script>
+</body>
+</html>
