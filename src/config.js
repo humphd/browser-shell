@@ -42,13 +42,12 @@ module.exports = {
     cdrom: {
       url: 'bin/v86-linux.iso',
     },
-    filesystem: {
-      // XXX: I need this so v86 starts with a P9 filesystem
-    },
     // Mouse disabled, undo if you want to interact with the screen
     disable_mouse: true,
     // Keyboard disabled, undo if you want to type in screen
     disable_keyboard: true,
+    // Disable sound
+    disable_speaker: true,
     autostart: true
   }
 };
