@@ -6,8 +6,10 @@ const { molokaiTheme } = require('./config');
 const vm = require('./vm');
 
 // Locally root will be / but on gh-pages, /browser-shell/
-const webRoot = window.location.pathname.replace(/\/$/, '');
-const fsRoot = `${webRoot}/fs/`;
+// Strip the leading and trailing / (if present), since we'll
+// add that in nohost.
+const webRoot = window.location.pathname.replace(/\//g, '');
+const fsRoot = `${webRoot ? webRoot + '/' : ''}fs`;
 
 function initBrowser() {
   // Open a page to the nohost web server for this filesystem.  
@@ -53,7 +55,7 @@ if(!('serviceWorker' in navigator)) {
 } else {
   navigator.serviceWorker
     // Downloaded via package.json script from https://www.npmjs.com/package/nohost?activeTab=versions via unpkg
-    .register(`nohost-sw.js?route=${fsRoot}`)
+    .register(`nohost-sw.js?route=${encodeURIComponent(fsRoot)}`)
     .then(initBrowser)
     .catch(err => {
       console.error(`[nohost] unable to register service worker: ${err.message}`);
