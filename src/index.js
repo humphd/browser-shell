@@ -17,7 +17,9 @@ if(!('serviceWorker' in navigator)) {
     .then(() => {
       // Open a page to the nohost web server for this filesystem.
       const iframe = document.querySelector('#nohost-server');
-      iframe.src = '/fs/';
+      // Locally root will be / but on gh-pages, /browser-shell/
+      const root = window.location.pathname.replace(/\/$/, '');
+      iframe.src = `${root}/fs/`;
 
       const btnRefresh = document.querySelector('#btn-refresh');
       btnRefresh.onclick = function(e) {
