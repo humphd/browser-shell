@@ -62,3 +62,7 @@ typings/
 
 .cache
 dist
+
+# This gets downloaded via package.json script
+src/nohost-sw.js
+src/nohost-sw.map
