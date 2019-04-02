@@ -5,12 +5,14 @@ const fit = require('xterm/lib/addons/fit/fit');
 const { molokaiTheme } = require('./config');
 const vm = require('./vm');
 
+// Locally root will be / but on gh-pages, /browser-shell/
+const webRoot = window.location.pathname.replace(/\/$/, '');
+const fsRoot = `${webRoot}/fs/`;
+
 function initBrowser() {
   // Open a page to the nohost web server for this filesystem.  
   const iframe = document.querySelector('#nohost-server');
   const iframeWindow = iframe.contentWindow;
-  // Locally root will be / but on gh-pages, /browser-shell/
-  const root = window.location.pathname.replace(/\/$/, '');
 
   // Back
   document.querySelector('#browser-back').onclick = function(e) {
@@ -25,7 +27,7 @@ function initBrowser() {
   };
 
   function goHome() {
-    iframe.src = `${root}/fs/`;
+    iframe.src = fsRoot;
   }
 
   // Forward
@@ -51,7 +53,7 @@ if(!('serviceWorker' in navigator)) {
 } else {
   navigator.serviceWorker
     // Downloaded via package.json script from https://www.npmjs.com/package/nohost?activeTab=versions via unpkg
-    .register('nohost-sw.js')
+    .register(`nohost-sw.js?route=${fsRoot}`)
     .then(initBrowser)
     .catch(err => {
       console.error(`[nohost] unable to register service worker: ${err.message}`);
