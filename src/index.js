@@ -8,7 +8,8 @@ const vm = require('./vm');
 // Locally root will be / but on gh-pages, /browser-shell/
 // Strip the leading and trailing / (if present), since we'll
 // add that in nohost.
-const webRoot = window.location.pathname.replace(/\//g, '');
+const pathname = window.location.pathname;
+const webRoot = pathname.replace(/^\//, '').replace(/\/$/, '');
 const fsRoot = `${webRoot ? webRoot + '/' : ''}fs`;
 
 function initBrowser() {
