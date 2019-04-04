@@ -1,17 +1,9 @@
 'use strict';
 
-const { fs, Path, Buffer } = require('filer');
+const filesystem = require('./filesystem');
 const { V86Starter } = require('v86');
 const { defaultEmulatorOptions } = require('./config');
 const cache = require('./cache');
-
-// Expose fs on window for people to play on the console if they want
-window.fs = fs;
-window.path = Path;
-window.Buffer = Buffer;
-console.info('fs, path, and Buffer are all available on window for debugging, e.g., fs.stat(\'/\', console.log)');
-console.info('See https://github.com/filerjs/filer for docs.');
-console.info('use ?debug on the URL if you need Plan9/Filer debug info from v86');
 
 // What our shell prompt looks like, so we can wait on it.
 const prompt = '/ # ';
@@ -20,12 +12,7 @@ const getVMStartOptions = () => {
   const options = Object.create(defaultEmulatorOptions);
 
   // Pass the filesystem into the vm
-  options.filesystem = {
-    fs,
-    sh: new fs.Shell(),
-    Path,
-    Buffer
-  };
+  options.filesystem = filesystem;
 
   return options;
 };
