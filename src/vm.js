@@ -22,7 +22,7 @@ let emulator = null;
 module.exports.boot = async term => {
   if (emulator) {
     return;
-  }
+  }  
 
   const hasCachedVM = await cache.hasState();
   if (hasCachedVM) {
@@ -48,6 +48,8 @@ const suspend = module.exports.suspend = () => {
     return;
   }
   emulator.stop();
+  document.querySelector('#term-pause').classList.add('inactive');
+  document.querySelector('#term-play').classList.remove('inactive');
 };
 
 // Restart the paused VM
@@ -56,6 +58,8 @@ const resume = module.exports.resume = () => {
     return;
   }
   emulator.run();
+  document.querySelector('#term-play').classList.add('inactive');
+  document.querySelector('#term-pause').classList.remove('inactive');
 };
 
 // Wire up event handlers, print shell prompt (which we've eaten), and focus term.
@@ -75,7 +79,7 @@ const startTerminal = (emulator, term) => {
 // Power up VM, saving state when boot completes.
 const coldBoot = async term => {
   const options = getVMStartOptions();
-  const emulator = new V86Starter(options);
+  emulator = new V86Starter(options);
 
   await storeInitialStateOnBoot(emulator, term);
   return emulator;
@@ -92,7 +96,7 @@ const warmBoot = async term => {
       URL.createObjectURL(new Blob([arrayBuffer], { type: 'application/octet-stream' } )))
     .then(url => {
       options.initial_state = { url };
-      const emulator = new V86Starter(options);
+      emulator = new V86Starter(options);
       startTerminal(emulator, term);
     });
 };

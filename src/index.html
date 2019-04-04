@@ -14,7 +14,13 @@
 
     <h2>Terminal to Linux VM</h2>
     <!-- xterm -->
-    <div id="terminal"></div>
+    <div class="app-window">
+        <div class="title-bar">
+            <i id="term-play" title="Start" class="material-icons md-48 inactive">play_circle_outline</i>
+            <i id="term-pause" title="Stop" class="material-icons md-48">pause_circle_outline</i>
+        </div>
+        <div id="terminal"></div>
+    </div>
 
     <!-- XXX: if you want the v86 console for some reason -->
     <div id="screen_container" hidden>
@@ -29,8 +35,8 @@
     </div>
 
     <h2>Nohost Web Server to shared Filer Filesystem</h2>
-    <div id="browser">
-        <div id="browser-buttons">
+    <div class="app-window">
+        <div class="title-bar">
             <i id="browser-back" title="Back" class="material-icons md-48">arrow_back</i>
             <i id="browser-forward" title="Forward" class="material-icons md-48">arrow_forward</i>
             <i id="browser-refresh" title="Refresh" class="material-icons md-48">refresh</i>
