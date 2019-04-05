@@ -1,13 +1,14 @@
 'use strict';
 
+// Locally root will be / but on gh-pages, /browser-shell/
+// Strip the leading and trailing / (if present), since we'll
+// add that in nohost.
 const pathname = window.location.pathname;
+const basename = pathname.replace(/\/(index.html)?$/, '');
+const webRoot = basename.replace(/^\//, '');
 
 module.exports = {
-  // Locally root will be / but on gh-pages, /browser-shell/
-  // Strip the leading and trailing / (if present), since we'll
-  // add that in nohost.
-  webRoot: pathname.replace(/^\//, '').replace(/\/$/, ''),
-  fsRoot: `${this.webRoot ? this.webRoot + '/' : ''}fs`,
+  fsRoot: webRoot ? `${webRoot}/fs` : 'fs',
 
   stateUrl: 'bin/vm-state.bin',
   vmStateCache: 'vm-state',

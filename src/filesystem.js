@@ -52,7 +52,7 @@ window.addEventListener('DOMContentLoaded', function() {
  * Put some files in the filesystem on the first run
  */
 function install() {
-  const readme = `Welcome! Your files are located in /mnt and available at the URL ${fsRoot}`;
+  const readme = `Welcome! Your files are located in /mnt and available at the URL /${fsRoot}`;
   fs.writeFile('/readme.txt', readme, (err) => {
     if(err) console.error('unable to write readme file!', err);
 

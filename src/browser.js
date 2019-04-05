@@ -20,7 +20,7 @@ function start() {
   };
 
   function goHome() {
-    iframe.src = fsRoot;
+    iframe.src = `/${fsRoot}`;
   }
 
   // Forward
