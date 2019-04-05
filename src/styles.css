@@ -42,3 +42,29 @@ h1, h2, h3, h4, h5, h6 {
 .inactive {
   color: rgba(0, 0, 0, 0.26);
 }
+
+#drag-drop {
+  height: 200px;
+  border: dashed 2px #AEAEAE;
+  border-top: 0;
+  color: #969696;
+  position: relative;
+}
+
+#drag-drop.drag {
+  border: dashed 2px #5EBF7C;
+  border-top: 0;
+  background-color:rgba(94,191,124,0.1)
+ }
+
+#drag-drop h3 {
+  position: absolute;
+  padding-top: 60px;
+  top: 35px;
+  text-align: center;
+  width: 100%;
+  background-image: url(upload-cloud.svg);
+  background-repeat: no-repeat;
+  background-position: center 0;
+  background-size: 70px;
+}

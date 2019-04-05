@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="../node_modules/xterm/dist/xterm.css">
     <link href="./favicon.ico" rel="icon" type="image/x-icon">
-    <link href="https://fonts.googleapis.com/css?family=Lato|Open+Sans|Material+Icons" rel="stylesheet"> 
+    <link href="https://fonts.googleapis.com/css?family=Lato|Open+Sans|Material+Icons" rel="stylesheet">
 </head>
 <body>
 
@@ -33,7 +33,7 @@
     <div>
         <p>Open your console to interact with the <code>fs</code> in JS.</p>
     </div>
-
+    
     <h2>Nohost Web Server to shared Filer Filesystem</h2>
     <div class="app-window">
         <div class="title-bar">
@@ -43,6 +43,16 @@
             <i id="browser-home" title="Home" class="material-icons md-48">home</i>
         </div>
         <iframe id="nohost-server">></iframe>
+    </div>
+
+    <h2>Add Files to Browser Filesystem</h2>
+    <div class="app-window">
+        <div class="title-bar">
+            <i class="material-icons md-48">folder</i>
+        </div>
+        <div id="drag-drop">
+            <h3>Drop files here...</h3>
+        </div>
     </div>
 
     <script src="./index.js"></script>
