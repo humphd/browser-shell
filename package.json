@@ -27,14 +27,14 @@
   "dependencies": {
     "filer": "^1.1.2",
     "v86": "github:humphd/v86#filer-9p-lastknowngood",
-    "xterm": "^3.11.0"
+    "xterm": "^3.12.2"
   },
   "devDependencies": {
     "babel-core": "^6.26.3",
     "babel-preset-env": "^1.7.0",
     "drag-drop": "^4.2.0",
-    "eslint": "^5.13.0",
+    "eslint": "^5.16.0",
     "parcel": "^1.12.3",
-    "workbox-window": "^4.1.1"
+    "workbox-window": "^4.2.0"
   }
 }
