@@ -44,22 +44,38 @@ module.exports.boot = async term => {
 
 // Pause the running VM
 const suspend = module.exports.suspend = () => {
+  updatePowerUI(false);
+
   if (!(emulator && emulator.is_running())) {
     return;
   }
+
   emulator.stop();
-  document.querySelector('#term-pause').classList.add('inactive');
-  document.querySelector('#term-play').classList.remove('inactive');
 };
 
 // Restart the paused VM
 const resume = module.exports.resume = () => {
+  updatePowerUI(true);
+
   if (!(emulator && !emulator.is_running())) {
     return;
   }
+
   emulator.run();
-  document.querySelector('#term-play').classList.add('inactive');
-  document.querySelector('#term-pause').classList.remove('inactive');
+};
+
+// Toggle play/pause power buttons so only 1 is active
+const updatePowerUI = (isPlaying) => {
+  const termPlay = document.querySelector('#term-play');
+  const termPause = document.querySelector('#term-pause');
+
+  if(isPlaying) {
+    termPlay.classList.add('inactive');
+    termPause.classList.remove('inactive');
+  } else {
+    termPlay.classList.remove('inactive');
+    termPause.classList.add('inactive');
+  }
 };
 
 // Wire up event handlers, print shell prompt (which we've eaten), and focus term.
@@ -68,12 +84,13 @@ const startTerminal = (emulator, term) => {
   term.writeln('Linux 4.15.7. Shared browser filesystem mounted in /mnt.');
   term.writeln('fs, path, and Buffer are available on console for debugging.');
   term.write(prompt);
-  term.focus();
 
   // Wire input events from xterm.js -> ttyS0
   term.on('key', key => emulator.serial0_send(key));
   // Wire output events from ttyS0 -> xterm.js
   emulator.add_listener('serial0-output-char', char => term.write(char));
+
+  updatePowerUI(true);
 };
 
 // Power up VM, saving state when boot completes.

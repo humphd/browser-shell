@@ -15,10 +15,10 @@ module.exports = {
 
   // https://github.com/sonatard/color-theme-molokai/blob/2320bc6150c5dd2be353a9a7967e8c482dc48b61/molokai.minttyrc
   molokaiTheme: {
-    background: '#1B1D1E',
+    background: '#252525',
     cursor: '#A0A0A0',
     foreground: '#A0A0A0',
-    black: '#1B1D1E',
+    black: '#252525',
     blue: '#268BD2',
     brightBlack: '#505354',
     brightBlue: '#62ADE3',

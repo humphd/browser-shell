@@ -10,50 +10,111 @@
 </head>
 <body>
 
-    <h1>Browser Shell (<a href="https://github.com/humphd/browser-shell">humphd/browser-shell</a>)</h1>
+    <header>
+        <h1>Browser Shell</h1>
+        <p class="readable"><strong>tldr;</strong> Linux VM mounting a shared JS/IndexedDB-based filesystem with a Service Worker web server.
+        </p>
+    </header>
 
-    <h2>Terminal to Linux VM</h2>
-    <!-- xterm -->
-    <div class="app-window">
-        <div class="title-bar">
-            <i id="term-play" title="Start" class="material-icons md-48 inactive">play_circle_outline</i>
-            <i id="term-pause" title="Stop" class="material-icons md-48">pause_circle_outline</i>
-        </div>
-        <div id="terminal"></div>
-    </div>
+    <main class="readable">
+        <h2>Introduction</h2>
 
-    <!-- XXX: if you want the v86 console for some reason -->
-    <div id="screen_container" hidden>
-        <div style="white-space: pre; font: 14px monospace; line-height: 14px"></div>
-        <canvas></canvas>
-    </div>
-    <!-- XXX: button assumed in libv86.js crashes without this -->
-    <button id="start_emulation" hidden>Start Emulation</button>
+        <p>For reasons not altogether clear to me, I'm obsessed with the idea of putting a
+            filesystem in the browser. I've been exploring this idea since 2014 in one way or another.
+            I got started on it when I was <a href="https://blog.humphd.org/thimble-and-bramble/">porting Adobe's Brackets desktop editor</a>
+            to the browser for Mozilla's Thimble online editor project.  To do that, I needed to trick the app into thinking
+            there was a full filesystem in the browser. A <a href="https://twitter.com/modeswitch">friend</a> told me about
+            a project he'd started to create a JS filesystem running on top of
+            <a href="https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API">IndexedDB</a>
+            called <a href="https://github.com/filerjs/filer">Filer</a>.  I started hacking on it with him, and never stopped.
+            Filer works really well, and we used in Thimble to handle millions of files in browsers all over the world. 
+        </p>
 
-    <div>
-        <p>Open your console to interact with the <code>fs</code> in JS.</p>
-    </div>
-    
-    <h2>Nohost Web Server to shared Filer Filesystem</h2>
-    <div class="app-window">
-        <div class="title-bar">
-            <i id="browser-back" title="Back" class="material-icons md-48">arrow_back</i>
-            <i id="browser-forward" title="Forward" class="material-icons md-48">arrow_forward</i>
-            <i id="browser-refresh" title="Refresh" class="material-icons md-48">refresh</i>
-            <i id="browser-home" title="Home" class="material-icons md-48">home</i>
-        </div>
-        <iframe id="nohost-server">></iframe>
-    </div>
+        <p>Since then I've continued to improve and extend Filer, building out the <a href="https://nodejs.org/api/fs.html">node.js <code>fs</code></a>
+            compatibility as it's evolved and grown.  While doing this work, one of the things
+            I always wanted was a full command-line shell that I could use to create, view, and modify the files in the filesystem.
+            I toyed with the idea of creating one from scratch, but decided it might be faster to just figure out how to get Linux
+            running in the browser, and have it mount the Filer filesystem somehow.
+        </p>
 
-    <h2>Add Files to Browser Filesystem</h2>
-    <div class="app-window">
-        <div class="title-bar">
-            <i class="material-icons md-48">folder</i>
+        <p>It turns out this isn't such a crazy idea (or, it's crazy, but doable!), and this page is a demonstration of exactly
+            what it looks like in practice.  I'll go into more details below, but here's a summary of what you're about to see,
+            and what I needed to do to make this possible:
+        </p>
+            
+        <ol>
+            <li>extend <a href="https://github.com/filerjs/filer">Filer</a> so that it could support everything needed for
+                <a href="https://9p.io/sys/man/5/INDEX.html">Plan 9's 9P resource sharing protocol</a>
+                (e.g., I had to add things like <code>chmod</code>, <code>chown</code>, etc.)</code>
+            </li>
+            <li>virtualize a PC in the browser using a modified <a href="https://github.com/humphd/v86/tree/filer-9p-lastknowngood">v86</a>, and add a Filer-based virtio filesystem device.</li>
+            <li>create a custom Linux kernel and OS suitable for running in the browser using <a href="https://github.com/humphd/browser-vm">browser-vm.</a></li>
+            <li>mount this filesystem in the Linux VM guest OS under <code>/mnt</code> via Plan 9 Resource Sharing and a kernel <a href="https://www.ibm.com/developerworks/library/l-virtio/index.html">virtio</a> driver.</li>
+            <li>connect <a href="https://github.com/xtermjs/xterm.js">xterm.js</a> to the VM's serial port to get a working terminal connection.</li>
+            <li>create a web server in a Service Worker to serve files out of this same filesystem.  This uses my <a href="https://github.com/humphd/nohost">nohost</a> web server library.</li>
+        </ol>
+
+        <h2>UI Components</h2>
+
+        <p>While you've been reading this, Linux has (hopefully) been booting in the terminal just below.  Once it's fully booted,
+            the VM's state is stored in <a href="https://developer.mozilla.org/en-US/docs/Web/API/CacheStorage">Cache Storage</a>, so
+            you can reload the tab, and it should start instantly (like suspending/waking your laptop).  You can <code>cd /mnt</code>
+            and start working with the Filer filesystem directly in Linux.
+        </p>
+
+        <p>Below the terminal is an <code>iframe</code> connected to the nohost web server.  Whatever you do in <code>/mnt</code>
+            will be reflected in the web server (e.g., <code>echo "this was created in Linux" > new-file.txt</code>).  You can
+            create directories, symlinks, copy files, whatever you like.  It's Linux!  The nohost server will respond to any request
+            on <code>/fs</code>, so to browse to a file named <code>/my/file.html</code> you'd use a URL of <code>/fs/my/file.html</code>.
+        </p>
+
+        <p>Finally, below </p>
+
+        <h2>Terminal to Linux VM</h2>
+        <!-- xterm -->
+        <div class="app-window">
+            <div class="title-bar">
+                <i id="term-play" title="Start" class="material-icons md-48 inactive">play_circle_outline</i>
+                <i id="term-pause" title="Stop" class="material-icons md-48 inactive">pause_circle_outline</i>
+            </div>
+            <div id="terminal"></div>
         </div>
-        <div id="drag-drop">
-            <h3>Drop files here...</h3>
+
+        <!-- XXX: if you want the v86 console for some reason -->
+        <div id="screen_container" hidden>
+            <div style="white-space: pre; font: 14px monospace; line-height: 14px"></div>
+            <canvas></canvas>
         </div>
-    </div>
+        <!-- XXX: button assumed in libv86.js crashes without this -->
+        <button id="start_emulation" hidden>Start Emulation</button>
+
+        <div>
+            <p>Open your console to interact with the <code>fs</code> in JS.</p>
+        </div>
+        
+        <h2>Nohost Web Server to shared Filer Filesystem</h2>
+        <div class="app-window">
+            <div class="title-bar">
+                <i id="browser-back" title="Back" class="material-icons md-48">arrow_back</i>
+                <i id="browser-forward" title="Forward" class="material-icons md-48">arrow_forward</i>
+                <i id="browser-refresh" title="Refresh" class="material-icons md-48">refresh</i>
+                <i id="browser-home" title="Home" class="material-icons md-48">home</i>
+            </div>
+            <iframe id="nohost-server">></iframe>
+        </div>
+
+        <h2>Add Files to Browser Filesystem</h2>
+        <div class="app-window">
+            <div class="title-bar">
+                <i class="material-icons md-48">folder</i>
+            </div>
+            <div id="drag-drop">
+                <h3>Drop files here...</h3>
+            </div>
+        </div>
+
+    </main>
+
 
     <script src="./index.js"></script>
 </body>

@@ -2,9 +2,59 @@
   box-sizing: border-box;
 }
 
+html, body {
+  margin: 0;
+  padding: 0;
+  color: #252525;
+}
+
 body {
-  margin: 20px;
   font-family: 'Cardo', serif;
+}
+
+header {
+  background-color: #252525;
+  width: auto;
+  margin: 0 auto;
+  padding: 0;
+  text-align: center;
+}
+
+header h1 {
+  color: #f59a08;
+  font-size: 4em;
+  margin: 0;
+  padding-top: 1em;
+}
+
+header p {
+  color: lightgray;
+  text-align: left;
+}
+
+.readable {
+  max-width: 960px;
+  padding: 2rem;
+  font-size: 1.3em;
+  line-height: 1.75;
+  margin: auto;
+}
+
+main {
+}
+
+main a {
+  color: #0863f5;
+  text-decoration: none;
+}
+
+main a:hover {
+  color: #0863f5;
+  text-decoration: underline;
+}
+
+main a:visited {
+  color: #9a08f5;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -23,11 +73,13 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .app-window {
+  line-height: 1;
   display: grid;
   grid-template-columns: 100%;
 }
 
 .title-bar {
+  font-size: 1.3em;
   background-color: lightgray;
   border: 1px solid darkgray;
   padding: 10px;
