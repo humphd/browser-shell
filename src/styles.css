@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css?family=Cardo:400,700|Oswald|Material+Icons');
+
 * {
   box-sizing: border-box;
 }
@@ -29,7 +31,6 @@ header h1 {
 
 header p {
   color: lightgray;
-  text-align: left;
 }
 
 .readable {
@@ -96,8 +97,13 @@ h1, h2, h3, h4, h5, h6 {
   color: rgba(0, 0, 0, 0.26);
 }
 
+.glenda {
+  float: right;
+  border: 0;
+}
+
 #drag-drop {
-  height: 200px;
+  height: 250px;
   border: dashed 2px #AEAEAE;
   border-top: 0;
   color: #969696;
