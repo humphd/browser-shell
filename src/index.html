@@ -234,7 +234,7 @@
 
         <p>
             My next hurdle was to create an operating system that would have all the bits I needed,
-            and nothing I didn't.  It also needed to be small, load my virtio kernel driver, and
+            and nothing I didn't.  It also needed to be small, load my virtio kernel module, and
             include various startup scripts for the serial port setup, filesystem mount, etc. 
         </p>
 
@@ -267,9 +267,9 @@
 
         <p>
             Eventually I created <a href="https://github.com/humphd/browser-vm">my own Buildroot v86 board config and a Docker container</a>
-            to automate the build process.  I spent a bunch of time stripping down the Kernel config to get rid of unnecessary
-            drivers and bloat, but I'm sure there's <a href="https://github.com/humphd/browser-vm/issues/1">more space saving that could be done</a>.
-            The end result is an ISO file with a custom Linux kernel, Plan 9 filesystem sharing, a root filesystem and shell using
+            to automate the build process.  I spent a bunch of time <a href="https://github.com/humphd/browser-vm/blob/master/buildroot-v86/board/v86/linux.config">stripping down the Kernel config</a>
+            to get rid of unnecessary drivers and bloat, but I'm sure there's <a href="https://github.com/humphd/browser-vm/issues/1">more space saving that could be done</a>.
+            The end result is an <a href="https://github.com/humphd/browser-vm/releases/">ISO file</a> with a custom Linux kernel, Plan 9 filesystem sharing, a root filesystem and shell using
             <a href="https://busybox.net/">BusyBox</a>, and <a href="https://github.com/humphd/browser-vm/tree/master/buildroot-v86/board/v86/rootfs_overlay/etc">
             startup scripts</a> to get the serial terminal working and <code>/mnt</code> mounted to the browser filesystem.
             The browser downloads it and boots it as a CD-ROM.
@@ -305,16 +305,16 @@
             The only extra thing I did this time was to spend some time reducing the size of the code necessary to
             maintain the list of MIME types I need in my server.  Previously I've used <a href="https://github.com/jshttp/mime-db">mime-db</a>
             and <a href="https://github.com/jshttp/mime-types">mime-types</a>, which are comprehensive, but massive to
-            include in a browser.
+            include in a browser.  In the end I wrote some code to build my own, <a href="https://github.com/humphd/browser-mime">browser-mime</a>.
         </p>
 
         <p>
             My solution was to use <a href="https://pptr.dev/">Puppeteer</a> to process every MIME type in
-            <a href="https://github.com/jshttp/mime-db">mime-db</a>, one by one, and create empty files to see
-            if the browser could render them, or instead offered to download them.  I found that I was able to use
+            <a href="https://github.com/jshttp/mime-db">mime-db</a>, one by one, and create empty files of each type to see
+            if the browser would parse/render them, or instead offer to download them.  I found that I was able to use
             the <a href="https://developer.mozilla.org/en-US/docs/Web/API/PerformanceNavigationTiming">Navigation Timing API</a>
             to determine whether a page load occurred (i.e., the browser knew how to process this type), or if
-            the stream was simply downloaded to the user's OS (i.e., the browser can't render/parse this type).
+            the stream was simply downloaded to the user's OS (i.e., type not supported by the browser).
             This info allowed me to come up with a <a href="https://github.com/humphd/browser-mime/blob/master/dist/browser-mime-db.json">
             much reduced MIME db</a> that I can bundle with my Service Worker, and which only includes things
             the browser is likely to parse/render, letting everything else get downloaded as an <code>application/octet-stream</code>.
@@ -324,7 +324,7 @@
 
         <p>
             In the end, this is the solution to a problem you don't have.  I get that.  And yet, it was so much fun to
-            get working, I had to share it with you.  I <em>love</em> getting browsers to do new tricks.
+            get working, I had to share it with you.  I <em>love</em> making browsers do new tricks.
             I wanted to put this page together to show what's possible by connecting some of the different
             things I've been thinking about and working on, specifically:
         </p>
@@ -339,8 +339,8 @@
 
         <p>
             The techniques I've outlined above are only going to become more realistic as we move forward.  <a href="https://webassembly.org/">WebAssembly</a>
-            is going to push the limits of what's possible in the browser yet again.  VMs in the browser are only going to get faster.
-            For example, a few weeks ago <a href="https://github.com/s-macke/jor1k/commit/5075e059c0f06dadeafe7740bb5561c194dca87c">jor1k got a WASM CPU rewrite</a>.
+            is pushing the limits of what's possible in the browser yet again.  Running complex code like VMs in the browser is
+            going to get faster. For example, a few weeks ago <a href="https://github.com/s-macke/jor1k/commit/5075e059c0f06dadeafe7740bb5561c194dca87c">jor1k got a WASM CPU rewrite</a>.
         </p>
 
         <p>
