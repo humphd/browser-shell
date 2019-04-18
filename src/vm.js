@@ -165,7 +165,6 @@ const storeInitialStateOnBoot = async (emulator, term) => {
   // Wait for the prompt to come up, then start term and save the VM state
   await waitForPrompt(emulator, term);
   startTerminal(emulator, term);
-  term.focus();
   emulator.save_state(cache.saveState);
   console.log('Saved VM cpu/memory state to Cache Storage');
 };

@@ -20,16 +20,18 @@
         <h2>Overview</h2>
 
         <p>
-            This is a proof-of-concept demo of a number of interconnected ideas and projects
-            I've been working on, all of them underpinned by the central idea of a <strong>browser filesystem</strong>.
-            Since a demo is supposed to get straight to the point, I'll start by giving you a quick tour,
-            then below that explain how everything fits together.
+            This is too hard to explain on Twitter, and needs something more than a blog post.
+            So I've made you a demo of a number of interconnected projects
+            I've been working on, all underpinned by the central idea of a <strong>browser filesystem</strong>.
+            Everything you're about to see and do is going to happen in your browser, in JavaScript, and
+            thanks to lots of features of the modern web platform. And, since a demo is supposed to get straight to the point,
+            I'll pause my explanation here and give you a quick tour.  Below that I'll explain how everything works.
         </p>
 
         <h3>Terminal to A Linux VM Mounting Shared Filesystem</h3>
 
         <p>
-            The first bit is a terminal to a <a href="https://github.com/humphd/browser-vm">custom Linux kernel</a>
+            The first part is a functional terminal to a <a href="https://github.com/humphd/browser-vm">custom embedded Linux</a>
             running in the browser.  As it boots, it's going to mount a
             <a href="https://github.com/filerjs/filer">JS filesystem</a>
             in <code>/mnt</code>&mdash;this same filesystem is also accessible outside
@@ -39,7 +41,7 @@
         </p>
 
         <p>
-            As far as Linux is concerned, it's just a normal filesystem, and you can do the usual things:
+            As far as Linux is concerned, it's just a normal filesystem, and you can do the usual things, for example:
         </p>
 
         <ul>
@@ -50,6 +52,12 @@
             <li><code>cp hello-world.html files/index.html</code></li>
             <li><code>vi files/index.html</code></li>
         </ul>
+
+        <p>
+            Try it yourself.  Once it's booted, click the terminal and try working with <code>/mnt</code>.
+            Clicking away, or hitting the <em>pause</em> button will suspend the VM, hitting <em>play</em> will
+            resume it. 
+        </p>
 
         <!-- xterm -->
         <div class="app-window">
@@ -70,7 +78,7 @@
 
         <p>
             The filesystem and the VM will survive a reboot (reload of the page) without losing
-            any data.  The filesystem lives in indexeddb, and the VM's CPU and RAM state are stored
+            any data.  The filesystem lives in indexeddb, and the VM's initial CPU and RAM state are stored
             in Cache Storage.
         </p>
 
@@ -88,6 +96,7 @@
             To make this a bit more obvious, I've created a simple iframe-based web browser 
             that's serving the <code>/fs/</code> route.  You can try creating/modifying things
             in Linux, and refreshing the iframe browser to see the changes, and view the files.
+            I've also created a few files to get you started.
         </p>
 
         <div class="app-window">
@@ -103,14 +112,16 @@
         <p>
             Because a Service Worker doesn't need to be run in a page, you could also 
             navigate to these URLs manually (i.e., you don't need this page, or this iframe).
+            Again, there's no server.  It's just JavaScript handling network requests with data from indexeddb.
+            It looks like Apache because that's my how I grew up on the web, and it just felt right to use that style.
         </p>
 
         <h3>Import Files to the Browser Filesystem</h3>
 
         <p>
             If you want to try adding arbitrary files yourself, you can also drag-and-drop them
-            here.  NOTE: nothing is uploaded to a server, there is no server (beyond the static gh-pages serving this site).
-            Everything lives in <code>indexeddb</code>.  Whatever you add here will show up in <code>/mnt</code>
+            here.  NOTE: nothing is uploaded to a server, everything lives in <code>indexeddb</code>.
+            Whatever you add here will show up in <code>/mnt</code>
             in the VM, and in the <code>/</code> directory in the web server.
         </p>
 
@@ -126,13 +137,14 @@
         <h2>Discussion</h2>
 
         <p>
-            Now that you've got the idea, I'll spend some time talking about how it works, and what I had to build for each of the pieces.
+            Now that you've got the general idea, let me spend some time talking about how it works,
+            and what I had to build for each of the pieces.
         </p>
 
         <h3>Origins</h3>
 
         <p>
-            The entire thing is born out of an idea I'm obsessed with, namely, putting a
+            The entire thing is born out of an idea I'm fascinated with, namely, putting a
             filesystem in the browser. I've been chasing this idea since 2014 in one way or another.
             I got started on it when I was <a href="https://blog.humphd.org/thimble-and-bramble/">porting Adobe's Brackets desktop code editor</a>
             to the browser for Mozilla's Thimble project.  To do that, I needed to trick the app into thinking
@@ -146,9 +158,9 @@
 
         <p>
             Since then I've continued to improve and extend Filer, building out the necessary <a href="https://nodejs.org/api/fs.html">node.js <code>fs</code></a>
-            compatibility, which has continued to grow.  While doing this work, one of the things
+            compatibility, which has grown a lot.  While doing this work, one of the things
             I always wanted was a full command-line shell that I could use to create, view, and modify the files in the filesystem.
-            Having an API you can code against is nice, but as a regular user of filesystems, I wanted a shell!
+            Having an API you can code against is nice, but as a regular user of filesystems, I wanted a shell.
             I toyed with the idea of creating one from scratch, but decided it might be faster to just figure out how to get Linux
             running in the browser, and have it mount the Filer filesystem somehow.
         </p>
@@ -157,15 +169,15 @@
 
         <p>
             As you've just seen, this isn't such a crazy idea (or, it's crazy, but doable!). To make it work,
-            I first needed virtualized hardware running in the browser, something that is relatively easy in do
-            in 2019.  I'm using a version of the amazing <a href="https://github.com/humphd/v86/tree/filer-9p-lastknowngood">v86</a>
-            that I've modified for the task.  My v86 virtualized hardware is much like any number of old Linux
+            I first needed virtualized hardware running in the browser, something that is relatively easy to come by
+            in 2019.  I'm using a version of the amazing <a href="https://github.com/copy/v86">v86</a> project  
+            that I've <a href="https://github.com/humphd/v86/tree/filer-9p-lastknowngood">modified for the task</a>.  My v86 virtualized hardware is much like any number of old Linux
             boxes I've used since the mid-90s:
         </p>
             
         <ul>
             <li>x86 Pentium I</li>
-            <li>32M Ram</li>
+            <li>32M RAM</li>
             <li>CD-ROM Drive (I load and boot my VM as an ISO)</li>
             <li>Serial port connected to my terminal (I'm using <a href="https://xtermjs.org/">xtermjs</a>)</li>
         </ul>
@@ -173,19 +185,20 @@
         <h3>Kernel I/O Support</h3>
 
         <p>
-            Next I needed a way to mount my filesystem within Linux. I asked <a href="https://github.com/copy/">Fabian</a>
-            for some guidance, and he suggested that I could probably modify an existing JS virtio filesystem
-            that was created as part of the <a href="https://github.com/s-macke/jor1k">jor1k OpenRISC 1000 emulator</a>.
-            In jor1k and v86, this virtio filesystem allowed loading data over XMLHttpRequests from a remote server.
+            Next I needed a way to mount my filesystem within Linux. I asked <a href="https://github.com/copy/">Fabian</a>,
+            the creator of v86, for some guidance, and he suggested that I could probably modify some code that was created as part of the
+            <a href="https://github.com/s-macke/jor1k">jor1k OpenRISC 1000 emulator</a>, and also included in v86.
+            In both jor1k and v86, this filesystem allowed loading data over XMLHttpRequests from a remote server.
             In my case, I'd need to rework it to wrap my Filer filesystem API.
         </p>
 
         <p>
-            Getting this to work took me quite a while.  The idea is one that you may have encountered
-            in other virtual machines, where a host OS shares a filesystem with a guest VM.  Often this is
-            done using <a href="https://www.ibm.com/developerworks/library/l-virtio/index.html">virtio</a>,
-            where hardware layers is abstracted.  Linux supports a special <a href="https://www.kernel.org/doc/Documentation/filesystems/9p.txt">v9fs</a>
-            filesystem, which allows using a virtio transport to mount a Plan 9 9p remote filesystem.
+            The idea is one that you may have <a href="https://www.linux-kvm.org/page/9p_virtio">encountered in other virtual machines</a>,
+            where a host OS shares a filesystem with a guest VM.  Often this is done using
+            <a href="https://www.ibm.com/developerworks/library/l-virtio/index.html">virtio</a>,
+            where hardware layers are abstracted.  Linux supports a special
+            <a href="https://www.kernel.org/doc/Documentation/filesystems/9p.txt">v9fs</a>
+            filesystem, which allows using a virtio transport to mount a <a href="https://9p.io/plan9/">Plan 9</a> <a href="https://en.wikipedia.org/wiki/9P_(protocol)">9p remote filesystem</a>.
         </p>
 
         <p>
@@ -197,8 +210,8 @@
         </p>
 
         <p>
-            The <a href="https://9p.io/sys/man/5/INDEX.html">9p docs</a> are terse, but clear.  I've
-            spent a long time reading and re-reading them in order to finish this.  There are lots of
+            Getting this to work took me quite a while.  The <a href="https://9p.io/sys/man/5/INDEX.html">9p docs</a> are terse,
+            but clear if you spend enough time with them. There are lots of
             <a href="http://9p.cat-v.org/implementations">9p implementations in various languages</a>
             that I read as well.  I learned a lot by studying <a href="https://github.com/chaos/diod">chaos/diod</a>,
             <a href="https://github.com/ozaki-r/arm-js">arm-js</a>, <a href="https://github.com/s-macke/jor1k">jor1k</a>,
@@ -211,14 +224,17 @@
             writing a 9p server in Go.  The <a href="https://blog.aqwari.net/9p/parsing/">protocol parsing post</a>
             was particularly useful to me.  Debugging a failing virtio/9p implementation in JS, as it silently
             fails deep inside a Linux kernel running in an emulated VM in the browser, is not the most fun I've ever had.
-            But eventually, I got it.
+            But eventually, I got it.  If you're at all interested in what the protocol steps are like, reload this page 
+            with <code>?debug</code> on the URL, and open your <code>console</code> while you work with the <code>/mnt</code>
+            directory.  I have no doubt that if you press hard enough on the Linux terminal above, you'll likely uncover bugs,
+            which you can <a href="https://github.com/humphd/browser-shell/issues/new">file if you like</a>.
         </p>
         
         <h3>Operating System</h3>
 
         <p>
             My next hurdle was to create an operating system that would have all the bits I needed,
-            and nothing I didn't.  It also needed to be small, include my virtio kernel driver, and
+            and nothing I didn't.  It also needed to be small, load my virtio kernel driver, and
             include various startup scripts for the serial port setup, filesystem mount, etc. 
         </p>
 
@@ -245,8 +261,8 @@
             The <a href="https://buildroot.org/downloads/manual/manual.html">Buildroot docs</a> are really well done, but long.
             They also have great <a href="https://bootlin.com/doc/training/buildroot/buildroot-slides.pdf">training material</a>,
             and there are some excellent talks on YouTube, like <a href="https://www.youtube.com/watch?v=1PfthHCfudY">this one</a>.
-            I found it took me a long time to fill in the missing pieces that the docs/talks assumed, since many people coming
-            to Buildroot probably already have more extensive Linux and Kernel install/config knowledge than I did.
+            I found it took me a long time to fill in the gaps in my knowledge that the docs/talks seemed to assume, since many
+            people coming to Buildroot probably already have more extensive Linux and Kernel config knowledge than I did.
         </p>
 
         <p>
@@ -256,6 +272,7 @@
             The end result is an ISO file with a custom Linux kernel, Plan 9 filesystem sharing, a root filesystem and shell using
             <a href="https://busybox.net/">BusyBox</a>, and <a href="https://github.com/humphd/browser-vm/tree/master/buildroot-v86/board/v86/rootfs_overlay/etc">
             startup scripts</a> to get the serial terminal working and <code>/mnt</code> mounted to the browser filesystem.
+            The browser downloads it and boots it as a CD-ROM.
         </p>
 
         <h3>Web Server</h3>
@@ -306,7 +323,7 @@
         <h3>Conclusion</h3>
 
         <p>
-            This is the solution to a problem you don't have.  I get that.  And yet, it was so much fun to
+            In the end, this is the solution to a problem you don't have.  I get that.  And yet, it was so much fun to
             get working, I had to share it with you.  I <em>love</em> getting browsers to do new tricks.
             I wanted to put this page together to show what's possible by connecting some of the different
             things I've been thinking about and working on, specifically:
@@ -327,9 +344,25 @@
         </p>
 
         <p>
+            Being able to use the same page to create, edit, serve, and execute code seems like an idea that
+            could have many interesting uses.  It wouldn't be hard to hook up a few more "editor" apps to this 
+            site, and have them all share the same filesystem.  You could even run them out of the filesystem
+            if that made sense.  Combine this with any of the various web p2p protocols for sharing
+            data between browsers, and you could build some really cool and useful applications.
+        </p>
+
+        <p>
             If you're interested in the potential of a browser filesystem, you should <a href="https://twitter.com/humphd">get in touch</a>.
             I'd love to keep doing more with Filer, I think it has so much potential.  Right now it's just a side passion, but
             I'd love for it to be more.
+        </p>
+
+        <p>
+            Thanks for checking this out.  If you have thoughts you can <a href="https://github.com/humphd/browser-shell">let me know on GitHub</a>.
+        </p>
+
+        <p>
+            <em>David Humphrey (<a href="https://twitter.com/humphd">@humphd</a>), April 2019.</em>
         </p>
     </main>
     <script src="./index.js"></script>
