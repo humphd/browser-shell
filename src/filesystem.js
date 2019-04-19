@@ -2,6 +2,7 @@
 
 const { fsRoot } = require('./config');
 const { fs, Path, Buffer } = require('filer');
+const sh = new fs.Shell();
 const dragDrop = require('drag-drop');
 
 // Expose fs on window for people to play on the console if they want
@@ -19,25 +20,31 @@ console.info('use ?debug on the URL if you need Plan9/Filer debug info from v86'
 window.addEventListener('DOMContentLoaded', function() {
   const dropTarget = document.querySelector('#drag-drop');
 
-  dragDrop(dropTarget, function (files /*, pos, fileList, directories*/ ) {
-    // TODO: directories
-    
+  dragDrop(dropTarget, function (files) {
     files.forEach(function (file) {
       console.log(`Importing ${file.fullPath}...`);
   
-      // convert the file to a Buffer that we can use!
       var reader = new FileReader();
       reader.onload = function(e) {
         // e.target.result is an ArrayBuffer
         var arr = new Uint8Array(e.target.result);
         var buffer = new Buffer(arr);
-  
-        fs.writeFile(file.fullPath, buffer, function(err) {
+
+        // Create any parent paths we need before trying to write the file
+        const dirname = Path.dirname(file.fullPath);
+        sh.mkdirp(dirname, function(err) {
           if(err) {
-            console.log(`...unable to import ${file.fullpath}: ${err.message}`);
-          } else {
-            console.log(`...wrote ${file.size} bytes successfully.`);
+            return console.log(`...unable to create directory path ${dirname}: ${err.message}`);
           }
+
+          // Write the file to disk
+          fs.writeFile(file.fullPath, buffer, function(err) {
+            if(err) {
+              console.log(`...unable to import file ${file.fullPath}: ${err.message}`);
+            } else {
+              console.log(`...wrote ${file.fullPath} (${file.size} bytes) successfully.`);
+            }
+          });  
         });
       };
       reader.onerror = function(err) {
@@ -66,7 +73,7 @@ function install() {
 module.exports = {
   install,
   fs,
-  sh: new fs.Shell(),
+  sh,
   Path,
   Buffer
 };

@@ -18,7 +18,7 @@
     "type": "git",
     "url": "git+https://github.com/humphd/browser-shell.git"
   },
-  "author": "",
+  "author": "David Humphrey (@humphd)",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/humphd/browser-shell/issues"

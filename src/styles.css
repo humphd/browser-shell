@@ -41,7 +41,8 @@ header p {
   margin: auto;
 }
 
-main {
+code {
+  color: #425B52;
 }
 
 main a {
