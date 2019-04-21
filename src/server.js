@@ -6,6 +6,27 @@ const { fsRoot } = require('./config');
 const filesystem = require('./filesystem');
 
 /**
+ * Parcel doesn't like relative links to routes in a service worker.
+ * So let's do it at run-time vs. build-time! Swap all 
+ * <code class="parcel-ignore">/fs/...</code> for <a> links to server.
+ */
+function fixFsUrls() {
+  const links = document.querySelectorAll('.parcel-ignore');
+  if(!links) return;
+  
+  links.forEach(link => {
+    const path = link.innerHTML;
+    link.innerHTML = '';
+
+    const a = document.createElement('a');
+    a.href = path;
+    a.innerHTML = path;
+    a.target = '_blank';
+    link.appendChild(a);
+  });
+}
+
+/**
  * Register the nohost service worker, passing `route`
  */
 function start() {
@@ -18,7 +39,10 @@ function start() {
   const wb = new Workbox(`nohost-sw.js?route=${encodeURIComponent(fsRoot)}`);
 
   // Wait on the server to be fully ready to handle routing requests
-  wb.controlling.then(browser.start);
+  wb.controlling.then(() => {
+    fixFsUrls();
+    browser.start();
+  });
 
   // Deal with first-run install, if necessary
   wb.addEventListener('installed', (event) => {

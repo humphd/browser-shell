@@ -87,14 +87,14 @@
         <p>
             The second part of this demo is a <a href="https://github.com/humphd/nohost">static web server</a>,
             hosting the shared filesystem from a Service Worker. Any file or directory you create in Linux under <code>/mnt</code>
-            can be accessed via the web server at the <code>/fs</code> route. For example, if you want
+            can be accessed via the web server at the <code class="parcel-ignore">/fs</code> route. For example, if you want
             to browse to a file called <code>/hello-world.html</code> you need to use the URL
-            <code>/fs/hello-world.html</code>.
+            <code class="parcel-ignore">/fs/hello-world.html</code>.
         </p>
 
         <p>
             To make this a bit more obvious, I've created a simple iframe-based web browser 
-            that's serving the <code>/fs/</code> route.  You can try creating/modifying things
+            that's serving the <code class="parcel-ignore">/fs/</code> route.  You can try creating/modifying things
             in Linux, and refreshing the iframe browser to see the changes, and view the files.
             I've also created a few files to get you started.
         </p>
@@ -296,7 +296,7 @@
 
         <p>
             For this, <a href="https://github.com/humphd/nohost">my third iteration</a>, I used <a href="https://github.com/GoogleChrome/workbox">Workbox</a> to simplify my
-            Service Worker code, and then created some simple routing to watch for URLs using <code>/fs/*</code> and then
+            Service Worker code, and then created some simple routing to watch for URLs using <code class="parcel-ignore">/fs/</code> and then
             satisfy them with content from the filesystem.  The fact that indexeddb is accessible in both window and worker
             contexts make sharing data this way really easy.
         </p>
