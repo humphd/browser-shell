@@ -10,7 +10,7 @@ The Filer filesystem in the browser is mounted in the Linux VM at `/mnt`.
 ## Demo
 
 You can play with the [online demo](https://humphd.github.io/browser-shell/), or
-watch the following screencast.
+watch a [screencast on YouTube](https://youtu.be/TFxpPbNDlJw).
 
 The first time you boot, it needs to download the ISO, and do a cold boot. After
 that it will cache the state of the VM in Cache Storage, and reboots will be
@@ -21,7 +21,7 @@ You can open the console and get access to `fs`, `path`, and `Buffer` if you wan
 to try doing things from JS with the filesystem; just remember that your files
 are rooted in `/` vs. `/mnt` in JS.
 
-In the screencast below, I demonstrate creating some files and directories from
+Below, I demonstrate creating some files and directories from
 Linux, then accessing them via JS and the console, and vice versa.  Pretty much
 anything that Linux can do with a filesystem should work, including working with
 files, directories, symlinks, and all the usual I/O commands.  File a bug if you find
