@@ -9,7 +9,7 @@ os:
 
 after_success:
   - npm run build-travis
-  - ./tools/download-binaries.sh v1.0.0
+  - ./tools/download-binaries.sh v1.0.1
 
 deploy:
   provider: pages
